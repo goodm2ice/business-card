@@ -20,9 +20,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install Frontend Dependencies
-        run: cd frontend && npm ci
+        run: npm ci --prefix frontend
       - name: Run Frontend Tests
-        run: npm test
+        run: npm test --prefix frontend
   python-testing:
     runs-on: ubuntu-latest
     steps:
