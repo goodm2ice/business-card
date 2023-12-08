@@ -36,7 +36,7 @@ jobs:
           remote_path: $REMOTE_PATH
           remote_host: $REMOTE_HOST
           remote_user: $REMOTE_USER
-          rmeote_key: ${{ secrets.DEPLOY_KEY }}
+          remote_key: ${{ secrets.DEPLOY_KEY }}
       - name: Update client files on remote host
         uses: burnett01/rsync-deployments@6.0.0
         with:
@@ -45,4 +45,4 @@ jobs:
           remote_path: $REMOTE_PATH/frontend/build
           remote_host: $REMOTE_HOST
           remote_user: $REMOTE_USER
-          rmeote_key: ${{ secrets.DEPLOY_KEY }}
+          remote_key: ${{ secrets.DEPLOY_KEY }}
