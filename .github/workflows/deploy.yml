@@ -7,7 +7,6 @@ on:
 
 env:
   REMOTE_ROOT: github@45.8.99.76:/home/github/business-card
-  KEY_PATH: $HOME/.ssh/key
 
 jobs:
   deploy:
@@ -21,14 +20,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: mkdir "$HOME/.ssh"
-      - run: echo "${{ secrets.DEPLOY_KEY }}" > "$KEY_PATH"
-      - run: chmod 600 "$KEY_PATH"
+      - name: Set up private SSH key
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: |
+            ${{ secrets.DEPLOY_KEY }}
       - name: Install Frontend Dependencies
         run: npm ci --prefix frontend
       - name: Build Frontend Files
         run: npm eun build --prefix frontend
       - name: Update server files on remote host
-        run: rsync -e "ssh -i $KEY_PATH -o StrictHostKeyChecking=no" --archive --compress --delete --exclude 'frontend' . $REMOTE_ROOT
+        run: rsync -e "ssh -o StrictHostKeyChecking=no" --archive --compress --delete --exclude 'frontend' . $REMOTE_ROOT
       - name: Update client files on remote host
-        run: cd frontend/build && rsync -e "ssh -i $KEY_PATH -o StrictHostKeyChecking=no" --archive --compress --delete . $REMOTE_ROOT/frontend/build
+        run: cd frontend/build && rsync -e "ssh -o StrictHostKeyChecking=no" --archive --compress --delete . $REMOTE_ROOT/frontend/build
