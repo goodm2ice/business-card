@@ -1,9 +1,11 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Test"]
+    branches: [main]
+    types:
+      - completed
 
 env:
   REMOTE_ROOT: github@45.8.99.76:/home/github/business-card
