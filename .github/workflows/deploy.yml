@@ -8,7 +8,9 @@ on:
       - completed
 
 env:
-  REMOTE_ROOT: github@45.8.99.76:/home/github/business-card
+  REMOTE_PATH: /home/github/business-card
+  REMOTE_HOST: 45.8.99.76
+  REMOTE_USER: github
 
 jobs:
   deploy:
@@ -22,16 +24,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Set up private SSH key
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: |
-            ${{ secrets.DEPLOY_KEY }}
       - name: Install Frontend Dependencies
         run: npm ci --prefix frontend
       - name: Build Frontend Files
         run: npm run build --prefix frontend
       - name: Update server files on remote host
-        run: rsync -e "ssh -o StrictHostKeyChecking=no" --archive --compress --delete --exclude 'frontend' . $REMOTE_ROOT
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: --archive --compress --delete --exclude 'frontend'
+          path: ./
+          remote_path: $REMOTE_PATH
+          remote_host: $REMOTE_HOST
+          remote_user: $REMOTE_USER
+          rmeote_key: ${{ secrets.DEPLOY_KEY }}
       - name: Update client files on remote host
-        run: cd frontend/build && rsync -e "ssh -o StrictHostKeyChecking=no" --archive --compress --delete . $REMOTE_ROOT/frontend/build
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: --archive --compress --delete --exclude 'frontend'
+          path: ./frontend/build/
+          remote_path: $REMOTE_PATH/frontend/build
+          remote_host: $REMOTE_HOST
+          remote_user: $REMOTE_USER
+          rmeote_key: ${{ secrets.DEPLOY_KEY }}
