@@ -28,7 +28,7 @@ jobs:
       - name: Install Frontend Dependencies
         run: npm ci --prefix frontend
       - name: Build Frontend Files
-        run: npm eun build --prefix frontend
+        run: npm run build --prefix frontend
       - name: Update server files on remote host
         run: rsync -e "ssh -o StrictHostKeyChecking=no" --archive --compress --delete --exclude 'frontend' . $REMOTE_ROOT
       - name: Update client files on remote host
